@@ -1,0 +1,85 @@
+USE testingsystem;
+
+-- question 1
+SELECT *
+FROM `Account` A 
+INNER JOIN 	Department D ON A.DepartmentID = D.DepartmentID;
+
+-- question 2
+SELECT *
+FROM `Account`
+WHERE CreateDate > '2020-03-20';
+
+-- question 3
+SELECT *
+FROM `Account` A 
+INNER JOIN Position P ON A.PositionID = P.PositionID
+WHERE P.PositionName = 'Dev';
+
+-- question 4
+SELECT D.DepartmentID, D.DepartmentName, COUNT(A.DepartmentID) AS 'SO LUONG'
+FROM `Account` A 
+INNER JOIN Department D ON D.DepartmentID = A.DepartmentID
+GROUP BY A.DepartmentID
+HAVING COUNT(A.DepartmentID) > 3;
+
+-- question 5
+ SELECT q.content, Count(q.Content) AS 'So Luong'
+ FROM	Question q
+ JOIN 	ExamQuestion eq ON q.QuestionID = eq.QuestionID
+ GROUP BY	q.Content
+ HAVING		COUNT(q.Content) = (SELECT	MAX(a)
+ 								FROM		
+ 										(SELECT COUNT(q.QuestionID) AS a
+ 										FROM ExamQuestion eq
+ 										JOIN Question q ON eq.QuestionID = q.QuestionID
+ 										GROUP BY q.QuestionID) AS b);
+
+-- question 8
+SELECT q.content, COUNT(q.content) AS 'So Luong'
+FROM Question q
+JOIN Answer a ON q.QuestionID = a.QuestionID
+GROUP BY q.content
+HAVING COUNT(q.content) = (SELECT MAX(m)
+						   FROM
+								(SELECT COUNT(q.QuestionID) AS m
+								 FROM answer a
+                                 JOIN question q ON a.QuestionID = q.QuestionID
+                                 GROUP BY q.QuestionID) AS b);
+                                 
+-- question 9
+SELECT g.GroupName, COUNT(ga.AccountID) AS 'So Luong'
+FROM GroupAccount ga 
+RIGHT JOIN `Group` g ON	ga.GroupID = g.GroupID
+GROUP BY g.GroupID
+ORDER BY g.GroupID ASC;
+
+-- question 10
+SELECT p.PositionID, p.PositionName, COUNT(a.PositionID) AS 'SO LUONG'
+FROM `Position` p 
+INNER JOIN `Account` a ON p.PositionID = a.PositionID
+GROUP BY P.PositionID
+HAVING	COUNT(a.PositionID)	= (SELECT MIN(x)
+									 FROM		(SELECT COUNT(p.PositionID) AS x
+												FROM `Position` p 
+												INNER JOIN	`Account` a ON p.PositionID = a.PositionID		
+												GROUP BY p.PositionID) AS x);
+                                                
+-- question 13
+SELECT t.TypeName AS 'cau hoi', COUNT(q.TypeID) AS 'so luong'
+FROM Question q 
+INNER JOIN TypeQuestion t ON q.TypeID = t.TypeID
+GROUP BY q.TypeID;
+
+-- question 14
+SELECT DISTINCT g.GroupName
+FROM `Group` g
+LEFT JOIN GroupAccount ga ON g.GroupID = ga.GroupID
+WHERE ga.AccountID IS NULL;
+                    
+-- question 16
+SELECT *
+FROM Question
+WHERE QuestionID NOT IN (SELECT QuestionID
+							   FROM	Answer);
+

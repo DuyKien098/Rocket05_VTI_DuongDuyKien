@@ -1,0 +1,55 @@
+USE testingsystem;
+
+-- question 1
+DROP PROCEDURE IF EXISTS Nhap;
+DELIMITER $$
+CREATE PROCEDURE Nhap(IN in_department_name VARCHAR(50))
+BEGIN
+	SELECT a.Email, a.Username, a.CreateDate 
+    FROM Department d 
+	INNER JOIN `Account` a ON d.DepartmentID = a.DepartmentID
+    WHERE DepartmentName = in_department_name;
+END$$
+DELIMITER ;
+
+-- question 2
+DROP PROCEDURE IF EXISTS Print;
+DELIMITER $$
+CREATE PROCEDURE Print(IN in_GroupID INT)
+BEGIN
+	SELECT GroupID, COUNT(AccountID)
+    FROM GroupAccount 
+    WHERE GroupID = in_GroupID
+    GROUP BY GroupID;
+END$$
+DELIMITER ;
+
+-- question 3
+DROP PROCEDURE IF EXISTS QofM;
+DELIMITER $$
+CREATE PROCEDURE QofM()
+BEGIN
+	SELECT COUNT(TypeID)
+    FROM Question
+    WHERE MONTH(CreateDate) = Month(NOW());
+END$$
+DELIMITER ;
+
+-- question 4 + 5
+DROP PROCEDURE IF EXISTS MaxQuestion;
+DELIMITER $$
+CREATE PROCEDURE MaxQuestion()
+BEGIN
+    SELECT 		q.TypeID, q.Content, COUNT(TypeID) AS 'So luong'
+    FROM		Question q
+    GROUP BY 	TypeID
+    HAVING		COUNT(TypeID) = (SELECT MAX(a) 
+								 FROM (
+								 SELECT COUNT(TypeID) AS a
+								 FROM Question 
+								 GROUP BY TypeID) AS b);	
+	
+END$$
+DELIMITER ;
+
+-- question 6

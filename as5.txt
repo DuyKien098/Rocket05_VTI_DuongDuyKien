@@ -1,0 +1,59 @@
+USE Testingsystem;
+
+-- question 1
+DROP VIEW IF EXISTS Sale;
+CREATE VIEW Sale
+AS
+	SELECT a.*, d.DepartmentName
+	FROM `Account` a 
+	INNER JOIN `Department` d ON a.DepartmentID = d.DepartmentID
+	WHERE d.DepartmentName = 'Sale';
+    
+-- question 2
+DROP VIEW IF EXISTS MaxAccount;
+CREATE VIEW MaxAccount
+AS
+SELECT 		a.*, COUNT(ga.AccountID) AS 'so luong'
+FROM		`Account` a 
+INNER JOIN 	GroupAccount ga ON a.AccountID = ga.AccountID
+GROUP BY	a.AccountID
+HAVING		COUNT(ga.AccountID) = ( 
+									SELECT MAX(m)
+                                    FROM (
+									SELECT 		COUNT(ga.AccountID) AS m
+									FROM		`Account` a 
+									INNER JOIN 	GroupAccount ga ON a.AccountID = ga.AccountID
+									GROUP BY	a.AccountID) AS b);
+                                    
+-- question 3
+DROP VIEW IF EXISTS DelContent;
+CREATE VIEW DelContent
+AS
+	SELECT 	LENGTH(Content)
+	FROM	Question
+	WHERE	LENGTH(Content) > 300;
+
+-- question 4
+DROP VIEW IF EXISTS DepartmentMaxAccount;
+CREATE VIEW DepartmentMaxAccount
+AS
+	SELECT d.*, COUNT(a.DepartmentID)
+	FROM Department d 
+	INNER JOIN	`Account` a ON d.DepartmentID = a.DepartmentID
+	GROUP BY d.DepartmentID
+	HAVING COUNT(a.DepartmentID) = (
+									SELECT MAX(x)
+                                    FROM (
+										SELECT COUNT(a.DepartmentID) AS x
+										FROM Department d 
+										INNER JOIN `Account` a ON d.DepartmentID = a.DepartmentID
+										GROUP BY d.DepartmentID) AS y);
+                                        
+-- question 5
+DROP VIEW IF EXISTS ViewQuestion;
+CREATE VIEW ViewQuestion
+AS
+	SELECT 		q.*, a.FullName
+	FROM 		Question q 
+	INNER JOIN 	`Account` a ON q.CreatorID = a.AccountID
+	WHERE		a.FullName LIKE 'Nguyen%';
